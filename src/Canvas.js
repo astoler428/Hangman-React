@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import useCreateHang from "./useCreateHang";
 
 export default function Canvas({ incorrectGuesses }) {
@@ -17,7 +17,7 @@ export default function Canvas({ incorrectGuesses }) {
   useCreateHang(canvasRef, contextRef); //custom hook
 
   for (let guess = 0; guess < Math.min(incorrectGuesses, 6); guess++) {
-    if (guess == 0) drawHead(...bodyParts[guess]);
+    if (guess === 0) drawHead(...bodyParts[guess]);
     else drawBodyPart(...bodyParts[guess]);
   }
 
