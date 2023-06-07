@@ -4,6 +4,7 @@ import Choices from "./Choices";
 import Canvas from "./Canvas";
 import winAudio from "./audio/winAudio.mp3";
 import loseAudio from "./audio/loseAudio.mp3";
+import useFetchWord from "./useFetchWord";
 import React, { useEffect, useState } from "react";
 
 const playWinAudio = new Audio(winAudio);
@@ -20,14 +21,13 @@ function App() {
   //tracks number of games
   const [gameCount, setGameCount] = useState(0);
 
-  useEffect(() => {
-    getNewWord();
-  }, []);
+  //custom hook to generate a word
+  useFetchWord(setWord, setGameCount, setIncorrectGuesses, gameResults);
 
   //checks for the end of the game
+  //dependency array includes word because when a letter is guessed, the word state is changed
   useEffect(() => {
     if (gameResults.gameOver) return;
-
     if (
       incorrectGuesses === 6 ||
       (word.length > 0 && word.every((letterObj) => letterObj.visible === true))
@@ -35,28 +35,12 @@ function App() {
       endGame();
   }, [word, incorrectGuesses]);
 
-  function getNewWord() {
-    fetch("https://random-word-api.herokuapp.com/word").then((res) =>
-      res.json().then((data) => {
-        let letters = data.toString().toUpperCase().split("");
-        setWord(
-          letters.map((letter) => {
-            return { letter: letter, visible: false };
-          })
-        );
-        //these must be after word is set since they cause rerender before new word is set, setIncorrectGuesses causes to check endGame in useEffect and since fetch takes a while, word still looks solved
-        setGameCount((prev) => prev + 1);
-        setIncorrectGuesses(0);
-      })
-    );
-  }
-  // console.log(word);
-
+  //event listener for when a letter is chosen
+  //first checks if letter is in word at all. If so, change to visible, if not, increment incorrectGuesses
   function checkLetter(letter) {
     if (gameResults.gameOver) return;
 
     let wordContainsLetter = false;
-
     word.forEach((wordObj) => {
       if (wordObj.letter === letter) wordContainsLetter = true;
     });
@@ -74,12 +58,10 @@ function App() {
     }
   }
 
+  //determines if win or loss, plays audio and reveals word
   function endGame() {
     setGameResults({ gameOver: true, win: !(incorrectGuesses === 6) });
-
     !(incorrectGuesses === 6) ? playWinAudio.play() : playLoseAudio.play();
-
-    //reveal word
     setTimeout(revealWord, 1000);
 
     function revealWord() {
@@ -96,15 +78,11 @@ function App() {
       gameOver: false,
       win: false,
     });
-    getNewWord();
+    // new word gets generated because of dependency array in useFetchWord
   }
 
   let letterElements = word.map((letterObject) => (
-    <Letter
-      key={Math.random()}
-      visible={letterObject.visible}
-      letter={letterObject.letter}
-    />
+    <Letter key={Math.random()} letterObj={letterObject} />
   ));
 
   return (

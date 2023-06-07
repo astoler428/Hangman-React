@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+//custom hook that creates the cnavas context, configures the styling and draws the hangman diagram
+
 export default function useCreateHang(canvasRef, contextRef) {
   useEffect(() => {
     canvasRef.current.width = 400;
@@ -11,6 +13,7 @@ export default function useCreateHang(canvasRef, contextRef) {
     drawHang();
   }, []);
 
+  //draws the hangman diagram
   function drawHang() {
     drawPath(50, 350, 350, 350);
     drawPath(275, 350, 275, 50);

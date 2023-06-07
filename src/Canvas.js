@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import useCreateHang from "./useCreateHang";
 
 export default function Canvas({ incorrectGuesses }) {
