@@ -39,10 +39,12 @@ function Choices({ gameOver, handleChoice }) {
 
     //letterChoice will be the object in the alphabet that matches the letter chosen.
     //run through the alphabet and set letterChoice to the object that matches the letter
-    let letterChoice = "";
+    let letterChoice;
     alphabetRef.current.forEach((letterObj) => {
       if (letterObj.letter === letter) letterChoice = letterObj;
     });
+    //key other than alphabet was pressed
+    if (!letterChoice) return;
     //if the letter is not already chosen, update alphabet state and call handleChoice
     if (!letterChoice.chosen) {
       setAlphabet((oldAlphabet) => {

@@ -7,6 +7,10 @@ export default function useFetchWord(
   gameResults
 ) {
   useEffect(() => {
+    //gameResults is set twice, once to signal the end of the game and once to restart
+    //only fetch on restart
+    if (gameResults.gameOver === true) return;
+
     fetch("https://random-word-api.herokuapp.com/word").then((res) =>
       res.json().then((data) => {
         let letters = data.toString().toUpperCase().split("");
